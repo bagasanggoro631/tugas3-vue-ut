@@ -19,7 +19,7 @@
     <div v-if="searchResults.length > 0">
         <div class="card-do" v-for="doItem in searchResults" :key="doItem.noDO">
             <div class="card-do-header">
-                <h4>ID // {{ doItem.noDO }}</h4>
+                <h4>ID</h4>
                 <span class="status-badge" style="border-color: var(--accent); color: var(--accent);">{{ doItem.status }}</span>
             </div>
             <div class="card-do-body">
