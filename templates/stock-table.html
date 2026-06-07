@@ -38,17 +38,26 @@
 
     <table class="data-table">
         <thead>
-            <tr>
-                <th>Indeks / Deskripsi Judul</th>
-                <th>Kategori</th>
-                <th>Daerah UPBJJ</th>
-                <th>Lokasi Rak</th>
-                <th>Harga</th>
-                <th>Jumlah</th>
-                <th>Batas Aman</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
+            <tr v-for="(item, index) in processedStok" :key="item.kode">
+    <td data-label="Indeks / Judul"><span style="font-weight: 800; letter-spacing: -0.5px;">{{ item.kode }}</span> &mdash; {{ item.judul }}</td>
+    <td data-label="Kategori" style="color: var(--text-muted); font-size: 13px;">{{ item.kategori }}</td>
+    <td data-label="Daerah UPBJJ">{{ item.upbjj }}</td>
+    <td data-label="Lokasi Rak"><code>{{ item.lokasiRak }}</code></td>
+    <td data-label="Harga">{{ item.harga | formatRupiah }}</td>
+    <td data-label="Jumlah" :style="item.qty === 0 ? 'color: var(--danger-color); font-weight:800;' : ''">{{ item.qty | formatSatuanBuah }}</td>
+    <td data-label="Batas Aman" style="color: var(--text-muted);">{{ item.safety | formatSatuanBuah }}</td>
+    <td data-label="Status">
+        <span class="status-badge" :class="getStatusClass(item)" @mouseenter="showTooltip(item, $event)" @mouseleave="hideTooltip">
+            ● {{ getStatusText(item) }}
+        </span>
+    </td>
+    <td data-label="Aksi">
+        <div style="display: flex; gap: 6px;">
+            <button class="btn btn-edit" @click="selectEdit(item)">Ubah</button>
+            <button class="btn btn-delete" @click="deleteItem(item)">Hapus</button>
+        </div>
+    </td>
+</tr>
         </thead>
         <tbody>
             <tr v-for="(item, index) in processedStok" :key="item.kode">
