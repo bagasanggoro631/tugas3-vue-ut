@@ -348,3 +348,72 @@ select:focus, input:focus {
 .info-tip { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 .loading-state { text-align: center; padding: 60px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
 .empty-state { text-align: center; padding: 40px; color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: 8px; font-size: 13px; }
+
+/* =======================================================
+   📱 PENGATURAN RESPONSIVE MOBILE (Layar di bawah 768px)
+   ======================================================= */
+
+@media screen and (max-width: 768px) {
+    /* 1. Header & Navigasi: Diubah menjadi menurun (Vertikal) */
+    .app-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .header-controls {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .tab-navigation {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .tab-navigation button {
+        flex: 1; /* Membuat tombol tab memenuhi lebar layar */
+    }
+
+    /* 2. Panel Filter: Memanjang ke bawah agar mudah di-tap */
+    .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .filter-row label {
+        align-items: flex-start;
+    }
+
+    .filter-row select, 
+    .filter-row input {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .filter-row button {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+
+    /* 3. Grid Form Input: Dari menyamping menjadi 1 kolom penuh */
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+    }
+
+    /* 4. Solusi Tabel: Dibungkus agar bisa di-scroll ke samping (Swipe) */
+    .component-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Efek scroll halus di iPhone/Android */
+        padding-bottom: 10px;
+    }
+
+    .data-table {
+        min-width: 800px; /* Menjaga struktur tabel tetap rapi saat di-scroll */
+    }
+}
