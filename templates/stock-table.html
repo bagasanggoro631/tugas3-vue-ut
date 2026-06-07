@@ -1,28 +1,28 @@
 <div class="component-wrapper">
-    <h3>Asset Inventory Registry</h3>
+    <h3>Daftar Inventaris Aset</h3>
 
     <fieldset class="filter-panel">
-        <legend>Refine Engine</legend>
+        <legend>Penyaring Data</legend>
         <div class="filter-row">
-            <label>UT-Daerah
+            <label>UPBJJ Daerah
                 <select v-model="filterUPBJJ">
-                    <option value="">-- All Regions --</option>
+                    <option value="">-- Semua Daerah --</option>
                     <option v-for="item in upbjjList" :key="item" :value="item">{{ item }}</option>
                 </select>
             </label>
 
             <label v-if="filterUPBJJ">Kategori Mata Kuliah
                 <select v-model="filterKategori">
-                    <option value="">-- All Categories --</option>
+                    <option value="">-- Semua Kategori --</option>
                     <option v-for="item in kategoriList" :key="item" :value="item">{{ item }}</option>
                 </select>
             </label>
 
-            <label>Sort Axis
+            <label>Urutkan Berdasarkan
                 <select v-model="sortBy">
-                    <option value="judul">Title</option>
-                    <option value="qty">Quantity</option>
-                    <option value="harga">Price</option>
+                    <option value="judul">Judul</option>
+                    <option value="qty">Kuantitas</option>
+                    <option value="harga">Harga</option>
                 </select>
             </label>
         </div>
@@ -30,24 +30,24 @@
         <div class="filter-row margin-top">
             <label style="flex-direction: row; align-items: center; gap: 8px; cursor: pointer;">
                 <input type="checkbox" v-model="filterAlertStock">
-                <span>Isolate Shortage & Depleted Assets (Qty &lt; Safety)</span>
+                <span>Tampilkan Aset Kurang & Habis (Qty &lt; Batas Aman)</span>
             </label>
-            <button class="btn btn-reset" style="margin-left: auto;" @click="resetFilters">Reset Parameter</button>
+            <button class="btn btn-reset" style="margin-left: auto;" @click="resetFilters">Atur Ulang Parameter</button>
         </div>
     </fieldset>
 
     <table class="data-table">
         <thead>
             <tr>
-                <th>Index / Title Descriptor</th>
-                <th>Category</th>
-                <th>Regional Link</th>
-                <th>Location</th>
-                <th>Value</th>
-                <th>QTY</th>
-                <th>Safety</th>
+                <th>Indeks / Deskripsi Judul</th>
+                <th>Kategori</th>
+                <th>Daerah UPBJJ</th>
+                <th>Lokasi Rak</th>
+                <th>Harga</th>
+                <th>Jumlah</th>
+                <th>Batas Aman</th>
                 <th>Status</th>
-                <th>Control</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -66,8 +66,8 @@
                 </td>
                 <td>
                     <div style="display: flex; gap: 6px;">
-                        <button class="btn btn-edit" @click="selectEdit(item)">Modify</button>
-                        <button class="btn btn-delete" @click="deleteItem(item)">Wipe</button>
+                        <button class="btn btn-edit" @click="selectEdit(item)">Ubah</button>
+                        <button class="btn btn-delete" @click="deleteItem(item)">Hapus</button>
                     </div>
                 </td>
             </tr>
@@ -77,30 +77,30 @@
     <div v-if="tooltip.visible" class="custom-tooltip" :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }" v-html="tooltip.content"></div>
 
     <div class="form-card">
-        <h4>{{ isEditMode ? '[:Update Asset Node]' : '[:Inject New Asset Node]' }}</h4>
-        <p class="info-tip">*Press Keyboard [Enter] keys to commit transactional state mutation directly.</p>
+        <h4>{{ isEditMode ? '[:Perbarui Data Aset]' : '[:Tambah Data Aset Baru]' }}</h4>
+        <p class="info-tip">*Tekan tombol [Enter] pada keyboard untuk menyimpan perubahan data secara langsung.</p>
         
         <div class="form-grid margin-top">
-            <input type="text" placeholder="ID Code" v-model="form.kode" :disabled="isEditMode" @keyup.enter="saveForm">
-            <input type="text" placeholder="Asset Nomenclature" v-model="form.judul" @keyup.enter="saveForm">
+            <input type="text" placeholder="Kode ID" v-model="form.kode" :disabled="isEditMode" @keyup.enter="saveForm">
+            <input type="text" placeholder="Judul Aset" v-model="form.judul" @keyup.enter="saveForm">
             <select v-model="form.kategori" @keyup.enter="saveForm">
-                <option value="">-- Choose Category --</option>
+                <option value="">-- Pilih Kategori --</option>
                 <option v-for="c in kategoriList" :key="c" :value="c">{{ c }}</option>
             </select>
             <select v-model="form.upbjj" @keyup.enter="saveForm">
-                <option value="">-- Select Hub Target --</option>
+                <option value="">-- Pilih UPBJJ Tujuan --</option>
                 <option v-for="u in upbjjList" :key="u" :value="u">{{ u }}</option>
             </select>
-            <input type="text" placeholder="Shelf Location Grid" v-model="form.lokasiRak" @keyup.enter="saveForm">
-            <input type="number" placeholder="Unit Rate (IDR)" v-model.number="form.harga" @keyup.enter="saveForm">
-            <input type="number" placeholder="Physical Qty" v-model.number="form.qty" @keyup.enter="saveForm">
-            <input type="number" placeholder="Buffer Safety Point" v-model.number="form.safety" @keyup.enter="saveForm">
-            <input type="text" placeholder="Context Note Metadata" v-model="form.catatanHTML" @keyup.enter="saveForm">
+            <input type="text" placeholder="Grid Lokasi Rak" v-model="form.lokasiRak" @keyup.enter="saveForm">
+            <input type="number" placeholder="Harga Satuan (Rp)" v-model.number="form.harga" @keyup.enter="saveForm">
+            <input type="number" placeholder="Kuantitas Fisik" v-model.number="form.qty" @keyup.enter="saveForm">
+            <input type="number" placeholder="Batas Aman Stok" v-model.number="form.safety" @keyup.enter="saveForm">
+            <input type="text" placeholder="Keterangan Metadata" v-model="form.catatanHTML" @keyup.enter="saveForm">
         </div>
         
         <div style="display: flex; gap: 10px; margin-top: 25px;">
-            <button class="btn btn-save" @click="saveForm">{{ isEditMode ? 'Commit Changes' : 'Initialize Asset' }}</button>
-            <button v-if="isEditMode" class="btn btn-reset" @click="clearForm">Cancel</button>
+            <button class="btn btn-save" @click="saveForm">{{ isEditMode ? 'Simpan Perubahan' : 'Simpan Aset Baru' }}</button>
+            <button v-if="isEditMode" class="btn btn-reset" @click="clearForm">Batal</button>
         </div>
     </div>
 </div>
