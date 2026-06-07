@@ -1,0 +1,106 @@
+<div class="component-wrapper">
+    <h3>Asset Inventory Registry</h3>
+
+    <fieldset class="filter-panel">
+        <legend>Refine Engine</legend>
+        <div class="filter-row">
+            <label>UT-Daerah
+                <select v-model="filterUPBJJ">
+                    <option value="">-- All Regions --</option>
+                    <option v-for="item in upbjjList" :key="item" :value="item">{{ item }}</option>
+                </select>
+            </label>
+
+            <label v-if="filterUPBJJ">Kategori Mata Kuliah
+                <select v-model="filterKategori">
+                    <option value="">-- All Categories --</option>
+                    <option v-for="item in kategoriList" :key="item" :value="item">{{ item }}</option>
+                </select>
+            </label>
+
+            <label>Sort Axis
+                <select v-model="sortBy">
+                    <option value="judul">Title</option>
+                    <option value="qty">Quantity</option>
+                    <option value="harga">Price</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="filter-row margin-top">
+            <label style="flex-direction: row; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" v-model="filterAlertStock">
+                <span>Isolate Shortage & Depleted Assets (Qty &lt; Safety)</span>
+            </label>
+            <button class="btn btn-reset" style="margin-left: auto;" @click="resetFilters">Reset Parameter</button>
+        </div>
+    </fieldset>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Index / Title Descriptor</th>
+                <th>Category</th>
+                <th>Regional Link</th>
+                <th>Location</th>
+                <th>Value</th>
+                <th>QTY</th>
+                <th>Safety</th>
+                <th>Status</th>
+                <th>Control</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(item, index) in processedStok" :key="item.kode">
+                <td><span style="font-weight: 800; letter-spacing: -0.5px;">{{ item.kode }}</span> &mdash; {{ item.judul }}</td>
+                <td style="color: var(--text-muted); font-size: 13px;">{{ item.kategori }}</td>
+                <td>{{ item.upbjj }}</td>
+                <td><code>{{ item.lokasiRak }}</code></td>
+                <td>{{ item.harga | formatRupiah }}</td>
+                <td :style="item.qty === 0 ? 'color: var(--danger-color); font-weight:800;' : ''">{{ item.qty | formatSatuanBuah }}</td>
+                <td style="color: var(--text-muted);">{{ item.safety | formatSatuanBuah }}</td>
+                <td>
+                    <span class="status-badge" :class="getStatusClass(item)" @mouseenter="showTooltip(item, $event)" @mouseleave="hideTooltip">
+                        ● {{ getStatusText(item) }}
+                    </span>
+                </td>
+                <td>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn btn-edit" @click="selectEdit(item)">Modify</button>
+                        <button class="btn btn-delete" @click="deleteItem(item)">Wipe</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div v-if="tooltip.visible" class="custom-tooltip" :style="{ top: tooltip.top + 'px', left: tooltip.left + 'px' }" v-html="tooltip.content"></div>
+
+    <div class="form-card">
+        <h4>{{ isEditMode ? '[:Update Asset Node]' : '[:Inject New Asset Node]' }}</h4>
+        <p class="info-tip">*Press Keyboard [Enter] keys to commit transactional state mutation directly.</p>
+        
+        <div class="form-grid margin-top">
+            <input type="text" placeholder="ID Code" v-model="form.kode" :disabled="isEditMode" @keyup.enter="saveForm">
+            <input type="text" placeholder="Asset Nomenclature" v-model="form.judul" @keyup.enter="saveForm">
+            <select v-model="form.kategori" @keyup.enter="saveForm">
+                <option value="">-- Choose Category --</option>
+                <option v-for="c in kategoriList" :key="c" :value="c">{{ c }}</option>
+            </select>
+            <select v-model="form.upbjj" @keyup.enter="saveForm">
+                <option value="">-- Select Hub Target --</option>
+                <option v-for="u in upbjjList" :key="u" :value="u">{{ u }}</option>
+            </select>
+            <input type="text" placeholder="Shelf Location Grid" v-model="form.lokasiRak" @keyup.enter="saveForm">
+            <input type="number" placeholder="Unit Rate (IDR)" v-model.number="form.harga" @keyup.enter="saveForm">
+            <input type="number" placeholder="Physical Qty" v-model.number="form.qty" @keyup.enter="saveForm">
+            <input type="number" placeholder="Buffer Safety Point" v-model.number="form.safety" @keyup.enter="saveForm">
+            <input type="text" placeholder="Context Note Metadata" v-model="form.catatanHTML" @keyup.enter="saveForm">
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 25px;">
+            <button class="btn btn-save" @click="saveForm">{{ isEditMode ? 'Commit Changes' : 'Initialize Asset' }}</button>
+            <button v-if="isEditMode" class="btn btn-reset" @click="clearForm">Cancel</button>
+        </div>
+    </div>
+</div>

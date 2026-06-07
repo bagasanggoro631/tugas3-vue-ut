@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SITTA UT - Sistem Informasi Logistik Bahan Ajar</title>
+    
+    <!-- Tautan Font dan Lembar Gaya Eksternal -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    
+    <!-- Tautan Vue Core Production -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+</head>
+<body>
+
+    <div id="app">
+        <!-- Header Aplikasi -->
+        <header class="app-header">
+            <div class="header-brand">
+                <h1>Sitta<span>.</span>ut</h1>
+                <p>Inti Digital & Manajemen Rantai Pasok Aset Pendidikan</p>
+            </div>
+            
+            <div class="header-controls">
+                <!-- Navigasi Tab Tabular -->
+                <nav class="tab-navigation">
+                    <button :class="{ active: currentTab === 'stok' }" @click="currentTab = 'stok'">Stok Aset</button>
+                    <button :class="{ active: currentTab === 'tracking' }" @click="currentTab = 'tracking'">Log Pengiriman</button>
+                </nav>
+
+                <!-- Tombol Pengalih Tema Reaktif -->
+                <button class="theme-toggle-btn" @click="toggleTheme">
+                    <span v-if="theme === 'light'">⚡ Mode Gelap</span>
+                    <span v-else>☀️ Mode Terang</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Area Konten Dinamis -->
+        <main class="app-content">
+            <!-- Status Memuat Data -->
+            <div v-if="loading" class="loading-state">Sinkronisasi Data Repositori...</div>
+            <div v-else>
+                
+                <!-- Panggilan Komponen Inventori Stok -->
+                <ba-stock-table 
+                    v-if="currentTab === 'stok'" 
+                    :initial-stok="sharedData.stok"
+                    :upbjj-list="sharedData.upbjjList"
+                    :kategori-list="sharedData.kategoriList">
+                </ba-stock-table>
+
+                <!-- Panggilan Komponen Pelacakan DO -->
+                <ba-do-tracking 
+                    v-if="currentTab === 'tracking'"
+                    :initial-tracking="sharedData.tracking"
+                    :paket-list="sharedData.paket"
+                    :pengiriman-list="sharedData.pengirimanList">
+                </ba-do-tracking>
+                
+            </div>
+        </main>
+    </div>
+
+    <!-- Pemuatan Skrip JavaScript Sesuai Urutan Arsitektur Ketergantungan -->
+    <script src="./js/services/api.js"></script>
+    <script src="./js/components/stock-table.js"></script>
+    <script src="./js/components/do-tracking.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+</html>
