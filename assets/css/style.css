@@ -406,14 +406,67 @@ select:focus, input:focus {
         gap: 10px;
     }
 
-    /* 4. Solusi Tabel: Dibungkus agar bisa di-scroll ke samping (Swipe) */
+    /* 4. Solusi Tabel: Mengubah Tabel Menjadi Card Layout (Vertikal) */
     .component-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch; /* Efek scroll halus di iPhone/Android */
-        padding-bottom: 10px;
+        overflow-x: hidden; /* Matikan geser ke samping */
+        padding: 20px;
     }
 
-    .data-table {
-        min-width: 800px; /* Menjaga struktur tabel tetap rapi saat di-scroll */
+    /* Memaksa elemen tabel untuk turun menjadi blok-blok */
+    .data-table, 
+    .data-table thead, 
+    .data-table tbody, 
+    .data-table th, 
+    .data-table td, 
+    .data-table tr { 
+        display: block; 
+        width: 100%;
     }
-}
+
+    /* Sembunyikan baris Header tabel (karena akan diganti label per baris) */
+    .data-table thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    /* Styling Kartu untuk setiap Baris (Row) Data */
+    .data-table tr {
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 15px;
+        background: var(--bg-card);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
+    /* Styling Isi Baris (Kolom) */
+    .data-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px dashed var(--border-color);
+        padding: 12px 0;
+        font-size: 13px;
+        text-align: right;
+    }
+
+    /* Menghilangkan garis putus-putus pada item terakhir (Tombol Aksi) */
+    .data-table td:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        justify-content: flex-end; /* Tombol rata kanan */
+    }
+
+    /* Membuat Label Virtual Otomatis berdasarkan atribut data-label di HTML */
+    .data-table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        text-align: left;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
