@@ -1,19 +1,19 @@
 <div class="component-wrapper">
-    <h3>Distribution & Delivery Pipelines</h3>
+    <h3>Pelacakan & Pengiriman DO</h3>
 
     <fieldset class="filter-panel">
-        <legend>Query Interface</legend>
+        <legend>Antarmuka Pencarian</legend>
         <div class="filter-row">
             <input type="text" 
                    v-model="searchQuery" 
                    style="flex: 1; font-size: 15px; padding: 12px;"
-                   placeholder="Scan Manifest ID Number / Student Registration ID + [Enter]..." 
+                   placeholder="Pindai Nomor Resi / NIM + [Enter]..." 
                    @keyup.enter="executeSearch"
                    @keyup.esc="clearSearch">
-            <button class="btn btn-save" style="padding: 14px 24px;" @click="executeSearch">Search</button>
-            <button class="btn btn-reset" style="padding: 14px 24px;" @click="clearSearch">Clear (Esc)</button>
+            <button class="btn btn-save" style="padding: 14px 24px;" @click="executeSearch">Cari</button>
+            <button class="btn btn-reset" style="padding: 14px 24px;" @click="clearSearch">Bersihkan (Esc)</button>
         </div>
-        <p class="info-tip" style="margin-top: 10px;">Matched Stream: {{ searchResults.length }} items index</p>
+        <p class="info-tip" style="margin-top: 10px;">Data Ditemukan: {{ searchResults.length }} item</p>
     </fieldset>
 
     <div v-if="searchResults.length > 0">
@@ -23,12 +23,12 @@
                 <span class="status-badge" style="border-color: var(--accent); color: var(--accent);">{{ doItem.status }}</span>
             </div>
             <div class="card-do-body">
-                <p style="margin-top: 0;"><strong>Recipient:</strong> {{ doItem.nama }} <span style="color: var(--text-muted);">({{ doItem.nim }})</span></p>
-                <p><strong>Route Agent:</strong> {{ getEkspedisiName(doItem.ekspedisi) }} | <strong>Departure Axis:</strong> {{ doItem.tanggalKirim | formatTanggalIndo }}</p>
-                <p><strong>Financial Clear Value:</strong> <span style="font-weight: 700; color: var(--accent);">{{ doItem.total | formatRupiah }}</span> [{{ doItem.paket }}]</p>
+                <p style="margin-top: 0;"><strong>Penerima:</strong> {{ doItem.nama }} <span style="color: var(--text-muted);">({{ doItem.nim }})</span></p>
+                <p><strong>Agen Ekspedisi:</strong> {{ getEkspedisiName(doItem.ekspedisi) }} | <strong>Tanggal Pengiriman:</strong> {{ doItem.tanggalKirim | formatTanggalIndo }}</p>
+                <p><strong>Total Biaya:</strong> <span style="font-weight: 700; color: var(--accent);">{{ doItem.total | formatRupiah }}</span> [{{ doItem.paket }}]</p>
                 
                 <div class="timeline-box">
-                    <h5>Incremental Route Milestones:</h5>
+                    <h5>Riwayat Perjalanan (Tracking):</h5>
                     <ul>
                         <li v-for="log in doItem.perjalanan" :key="log.waktu">
                             <span style="color: var(--text-muted); font-family: monospace;">[{{ log.waktu }}]</span> &mdash; {{ log.keterangan }}
@@ -37,55 +37,55 @@
                 </div>
 
                 <div class="add-log-inline">
-                    <input type="text" placeholder="Append structural log milestones statement..." v-model="newProgressText[doItem.noDO]" @keyup.enter="addTrackingProgress(doItem)">
-                    <button class="btn btn-save" @click="addTrackingProgress(doItem)">Append Log</button>
+                    <input type="text" placeholder="Tambahkan keterangan riwayat perjalanan..." v-model="newProgressText[doItem.noDO]" @keyup.enter="addTrackingProgress(doItem)">
+                    <button class="btn btn-save" @click="addTrackingProgress(doItem)">Tambah Log</button>
                 </div>
             </div>
         </div>
     </div>
-    <div v-else class="empty-state">Null Matrix: No active matching logistics manifest pipelines found.</div>
+    <div v-else class="empty-state">Data Tidak Ditemukan: Tidak ada data pengiriman yang cocok dengan pencarian.</div>
 
     <div class="form-card">
-        <h4>[+] Initialize Distribution Waybill Node</h4>
+        <h4>Inisiasi Data Pengiriman Baru</h4>
         <div class="form-grid margin-top">
-            <label>Generated Waybill ID
+            <label>Nomor DO (Otomatis)
                 <input type="text" v-model="formDO.noDO" disabled style="opacity: 0.6; font-weight: 700;">
             </label>
-            <label>Student Registration ID (NIM)
-                <input type="text" placeholder="9-Digit Numeric Array" v-model="formDO.nim">
+            <label>Nomor Induk Mahasiswa (NIM)
+                <input type="text" placeholder="Masukkan 9 Digit Angka" v-model="formDO.nim">
             </label>
-            <label>Consignee Identity Name
-                <input type="text" placeholder="Legal Fullname" v-model="formDO.nama">
+            <label>Nama Lengkap Penerima
+                <input type="text" placeholder="Nama Sesuai KTP" v-model="formDO.nama">
             </label>
-            <label>Logistics Operator Agent
+            <label>Operator Ekspedisi
                 <select v-model="formDO.ekspedisi">
-                    <option value="">-- Select Carrier --</option>
+                    <option value="">-- Pilih Ekspedisi --</option>
                     <option v-for="exp in pengirimanList" :key="exp.kode" :value="exp.kode">{{ exp.nama }}</option>
                 </select>
             </label>
-            <label>Distribution Package Unit
+            <label>Unit Paket Distribusi
                 <select v-model="formDO.paket">
-                    <option value="">-- Bind Pack Module Rule --</option>
+                    <option value="">-- Pilih Modul Paket --</option>
                     <option v-for="pkt in paketList" :key="pkt.kode" :value="pkt.kode">{{ pkt.kode }} &raquo; {{ pkt.nama }}</option>
                 </select>
             </label>
-            <label>Dispatch Target Date
+            <label>Target Tanggal Pengiriman
                 <input type="date" v-model="formDO.tanggalKirim">
             </label>
-            <label>Automated Pricing Calculation
+            <label>Kalkulasi Biaya Otomatis
                 <input type="text" :value="computedHargaPaket | formatRupiah" disabled style="font-weight: 800; color: var(--accent);">
             </label>
         </div>
 
         <div v-if="selectedPaketDetail" class="paket-preview-info">
-            <h5 style="margin-top:0; font-size:12px; text-transform:uppercase;">Package Contents Sub-Item Matrix Blueprint:</h5>
+            <h5 style="margin-top:0; font-size:12px; text-transform:uppercase;">Rincian Isi Paket Bahan Ajar:</h5>
             <ul style="margin:0; padding-left:20px; font-size:13px;">
-                <li v-for="buku in selectedPaketDetail.isi" :key="buku">Integrated Course Book Core Asset: <strong>{{ buku }}</strong></li>
+                <li v-for="buku in selectedPaketDetail.isi" :key="buku">Buku Materi Pokok (BMP): <strong>{{ buku }}</strong></li>
             </ul>
         </div>
 
         <div style="margin-top: 25px;">
-            <button class="btn btn-save" style="padding: 14px 28px;" @click="saveNewDO">Deploy Pipeline Manifest</button>
+            <button class="btn btn-save" style="padding: 14px 28px;" @click="saveNewDO">Konfirmasi Pengiriman Baru</button>
         </div>
     </div>
 </div>
